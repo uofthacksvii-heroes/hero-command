@@ -80,7 +80,11 @@ class Subpanels extends React.Component {
 					</p>
 				</p>
 				<button className="container-button" onClick={this.handleDeployment}>
-					Deploy
+					{deployment && !hasDeployed
+						? "Deploying"
+						: deployment && hasDeployed
+						? "Deployed"
+						: "Deploy"}
 				</button>
 			</div>
 		);

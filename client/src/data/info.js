@@ -53,7 +53,7 @@ export const responders = [
 export const cases = [
 	{
 		id: 0,
-		percentage: 45,
+		percentage: 57.73,
 		timestamp: new Date(),
 		diagnosis: "Cardiac Arrest",
 		coordinates: { lat: 43.6458709, lng: -79.3898179 },
@@ -63,7 +63,7 @@ export const cases = [
 	},
 	{
 		id: 1,
-		percentage: 56,
+		percentage: 66.69,
 		timestamp: new Date(),
 		diagnosis: "Suspected Cardiac Arrest",
 		address: "375 Queen St W, Toronto, ON M5V 2A5",

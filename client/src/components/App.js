@@ -4,11 +4,43 @@ import Panel from "./Panel";
 import { config, responders, cases, aeds } from "../data/info";
 
 class App extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = { casebox: [{}, {}] };
+	}
+
+	completeCalculation = (incidentIndex, color) => {
+		const casebox = { ...this.state.casebox };
+		casebox[incidentIndex] = {
+			color,
+			isLoading: false
+		};
+		this.setState({ casebox }, () => {
+			console.log("updated");
+		});
+	};
+
+	triggerCalculation = incidentIndex => {
+		const casebox = { ...this.state.casebox };
+		casebox[incidentIndex] = {
+			color: "orange",
+			isLoading: true
+		};
+		this.setState({ casebox }, () => {
+			console.log("updated");
+		});
+	};
+
 	render() {
 		return (
 			<div className="container">
-				<Panel cases={cases}></Panel>
+				<Panel
+					cases={cases}
+					casebox={this.state.casebox}
+					completeCalculation={this.completeCalculation}
+				></Panel>
 				<Map
+					cases={cases}
 					handleChange={this.handleChange}
 					responders={responders}
 					places={aeds}
@@ -17,6 +49,7 @@ class App extends React.Component {
 					loadingElement={<div style={{ height: `100vh` }} />}
 					containerElement={<div style={{ height: `100vh` }} />}
 					mapElement={<div style={{ height: `100vh` }} />}
+					triggerCalculation={this.triggerCalculation}
 				></Map>
 			</div>
 		);

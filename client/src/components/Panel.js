@@ -15,12 +15,15 @@ class Panel extends React.Component {
 			return (
 				<Subpanels
 					key={index}
+					index={index}
 					address={address}
 					aed={aed.length}
 					diagnosis={diagnosis}
 					percentage={percentage}
 					responders={responders.length}
 					timestamp={timestamp}
+					casebox={this.props.casebox[index]}
+					completeCalculation={this.props.completeCalculation}
 				></Subpanels>
 			);
 		});
@@ -28,7 +31,7 @@ class Panel extends React.Component {
 		return (
 			<div className="panel-container">
 				<img src="./hero.png" className="hero-container"></img>
-				{subpanelDivs}
+				<div className="subpanel-container">{subpanelDivs}</div>
 			</div>
 		);
 	}

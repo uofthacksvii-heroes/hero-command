@@ -10,35 +10,82 @@ import {
 import MiniMarkers from "./MiniMarkers";
 
 class Map extends React.Component {
-	componentDidMount() {
-		// Some sample data plus a helper for the DistanceMatrixService.
-		// const origin = new google.maps.LatLng(43.6458709, -79.3898179);
-		// const destination = new google.maps.LatLng(43.6489928, -79.3947052);
-		// const matrix = new google.maps.DistanceMatrixService();
-		// // Get distance from Google API, if server responds, call renderDetails().
-		// matrix.getDistanceMatrix(
-		// 	{
-		// 		origins: [origin],
-		// 		destinations: [destination],
-		// 		travelMode: google.maps.TravelMode.WALKING
-		// 	},
-		// 	(res, status) => {
-		// 		const result = res.rows[0].elements[0];
-		// 		const url =
-		// 			"https://cors-anywhere.herokuapp.com/e9dc4c18.ngrok.io/alert";
-		// 		fetch(url, {
-		// 			method: "POST",
-		// 			mode: "cors",
-		// 			body: JSON.stringify(result),
-		// 			headers: { "Content-Type": "application/json" }
-		// 		}).then(res => console.log(res));
-		// 	}
-		// );
+	async componentDidMount() {
+		const { coordinates, responders, aed } = this.props.cases[0];
+		const victim_coordinates = this.convertCoordinatesText(coordinates);
+		const responders_coordinates = this.convertCoordinatesText(responders[0]);
+		const aed_coordinates = this.convertCoordinatesText(aed[0].coordinates);
+
+		console.log(victim_coordinates, responders_coordinates, aed_coordinates);
+
+		const resToAed = await this.calculateDistanceMatrix(
+			responders_coordinates,
+			aed_coordinates
+		);
+		const aedToVic = await this.calculateDistanceMatrix(
+			aed_coordinates,
+			victim_coordinates
+		);
+
+		console.log(resToAed, aedToVic);
+		const resToAedToVic = {
+			distance: resToAed.distance + aedToVic.distance,
+			duration: resToAed.duration + aedToVic.duration
+		};
+
+		const resToVic = await this.calculateDistanceMatrix(
+			responders_coordinates,
+			victim_coordinates
+		);
+
+		const result = {
+			victim_coordinates: coordinates,
+			aed_coordinates: aed[0].coordinates,
+			responder_coordinates: responders[0],
+			from_total: resToAedToVic,
+			from_victim: resToVic
+		};
+
+		console.log(result);
+
+		const url =
+			"https://cors-anywhere.herokuapp.com/5c5307a8.ngrok.io/predict/one";
+		fetch(url, {
+			method: "POST",
+			mode: "cors",
+			body: JSON.stringify(result),
+			headers: { "Content-Type": "application/json" }
+		}).then(res => console.log(res));
 	}
 
-	onToggleOpen = item => {
-		console.log("hi", item);
-		this.props.handleChange();
+	convertCoordinatesText = obj => {
+		return new google.maps.LatLng(obj.lat, obj.lng);
+	};
+
+	calculateDistanceMatrix = (origin, destination) => {
+		return new Promise((resolve, reject) => {
+			const matrix = new google.maps.DistanceMatrixService();
+			matrix.getDistanceMatrix(
+				{
+					origins: [origin],
+					destinations: [destination],
+					travelMode: google.maps.TravelMode.WALKING
+				},
+				res => {
+					const result = res.rows[0].elements[0];
+					const { distance, duration } = result;
+					const obj = {
+						distance: distance.value,
+						duration: duration.value
+					};
+					result ? resolve(obj) : reject();
+				}
+			);
+		});
+	};
+
+	handleMarkersClicked = index => {
+		this.props.triggerCalculation(index);
 	};
 
 	render() {
@@ -47,7 +94,10 @@ class Map extends React.Component {
 
 		const incidentDivs = incidences.map((item, index) => (
 			<>
-				<Marker position={item} onClick={() => this.onToggleOpen(index)} />
+				<Marker
+					position={item}
+					onClick={() => this.handleMarkersClicked(index)}
+				/>
 				<Circle defaultCenter={item} radius={radius} options={others} />
 			</>
 		));
@@ -70,7 +120,6 @@ class Map extends React.Component {
 			<GoogleMap defaultZoom={zoom} defaultCenter={center}>
 				{incidentDivs}
 				{responderDivs}
-
 				{aedDivs}
 			</GoogleMap>
 		);

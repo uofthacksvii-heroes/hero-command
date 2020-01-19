@@ -5,26 +5,40 @@ class Subpanels extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			color: "orange",
-			isLoading: true,
-			hasCalculated: false
+			hasCalculated: false,
+			hasDeployed: false,
+			deployment: false
 		};
 	}
 
-	componentDidMount() {
-		if (this.state.isLoading) {
+	componentDidUpdate(prevProps) {
+		const { casebox, index } = this.props;
+		const { hasCalculated } = this.state;
+
+		if (
+			!hasCalculated &&
+			JSON.stringify(casebox) !== JSON.stringify(prevProps.casebox)
+		) {
 			setTimeout(() => {
 				const color = this.props.percentage < 50 ? "red" : "green";
-				this.setState({ color, isLoading: false }, () => {
-					console.log("done");
+				this.setState({ hasCalculated: true }, () => {
+					this.props.completeCalculation(parseInt(index), color);
 				});
 			}, 1500);
 		}
 	}
 
+	handleDeployment = () => {
+		this.setState({ deployment: true }, () => {
+			setTimeout(() => {
+				this.setState({ hasDeployed: true });
+			}, 1500);
+		});
+	};
+
 	render() {
-		const { isLoading, color } = this.state;
 		const {
+			casebox,
 			address,
 			timestamp,
 			percentage,
@@ -32,9 +46,14 @@ class Subpanels extends React.Component {
 			responders,
 			aed
 		} = this.props;
+
+		const { hasCalculated, hasDeployed, deployment } = this.state;
+
 		const style = (
-			<strong style={{ color: color }}>
-				{isLoading === true ? "Calculating..." : `${percentage}%`}
+			<strong style={{ color: casebox.color }}>
+				{casebox.isLoading && !hasCalculated
+					? "Calculating..."
+					: `${percentage}%`}
 			</strong>
 		);
 
@@ -47,9 +66,22 @@ class Subpanels extends React.Component {
 					No. of Responders nearby: {responders}
 					<br />
 					No. of AEDs nearby: {aed} <br />
-					Survival rate: {style}
+					{casebox.isLoading || hasCalculated ? (
+						<>Survival rate: {style}</>
+					) : null}
+					<p>
+						<em>
+							{deployment && !hasDeployed
+								? "Pinging for first responders..."
+								: deployment && hasDeployed
+								? "Responders are on the way!"
+								: null}
+						</em>
+					</p>
 				</p>
-				<button className="container-button">Deploy</button>
+				<button className="container-button" onClick={this.handleDeployment}>
+					Deploy
+				</button>
 			</div>
 		);
 	}

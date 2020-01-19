@@ -58,7 +58,7 @@ export const cases = [
 		diagnosis: "Cardiac Arrest",
 		coordinates: { lat: 43.6458709, lng: -79.3898179 },
 		address: "8 Mercer St, Toronto, ON M5V 0C4",
-		responders: [responders[0].coordinates, responders[1].coordinates],
+		responders: [responders[1].coordinates],
 		aed: [aeds[1]]
 	},
 	{
@@ -68,7 +68,7 @@ export const cases = [
 		diagnosis: "Suspected Cardiac Arrest",
 		address: "375 Queen St W, Toronto, ON M5V 2A5",
 		coordinates: { lat: 43.6491328, lng: -79.3938077 },
-		responders: [responders[2].coordinates],
+		responders: [responders[0].coordinates, responders[2].coordinates],
 		aed: [aeds[0]]
 	}
 ];

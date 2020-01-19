@@ -1,8 +1,8 @@
 .container {
 	display: grid;
 	grid-template-columns: 1fr 3fr;
-	align-items: center;
-	justify-content: center;
+	grid-gap: 1rem;
+	align-items: start;
 	height: 100vh;
 }
 
@@ -10,8 +10,12 @@
 	display: grid;
 	grid-template-columns: 1fr;
 	grid-gap: 1rem;
-	padding: 1rem;
-	height: 100vh;
+}
+
+.subpanel-container {
+	display: grid;
+	grid-template-rows: 1fr;
+	grid-gap: 1rem;
 }
 
 .hero-container {
@@ -32,7 +36,7 @@ body {
 	transition: 0.3s transform cubic-bezier(0.155, 1.105, 0.295, 1.12),
 		0.3s box-shadow,
 		0.3s -webkit-transform cubic-bezier(0.155, 1.105, 0.295, 1.12);
-	padding: 50px;
+	padding: 20px;
 	cursor: pointer;
 }
 
@@ -66,13 +70,13 @@ body {
 	}
 } */
 
-* {
+/* * {
 	box-sizing: border-box;
 }
 *::before,
 *::after {
 	box-sizing: border-box;
-}
+} */
 
 button {
 	position: relative;
